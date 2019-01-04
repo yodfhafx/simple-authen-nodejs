@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  br
+  h1(align='center')= title
+  p(align='center') Welcome to #{title}
+
+  .cotainer
+  .row.justify-content-center
+    .col-md-8
+      .card
+        .card-header Register Form
+        .card-body
+          form(action='/users/register' method='post' enctype='multipart/form-data')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='name') Name
+              .col-md-6
+                input.form-control(type='text' name='name' placeholder='Enter Name')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='email') E-Mail Address
+              .col-md-6
+                input.form-control(type='email' name='email' placeholder='Enter Email')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='username') Username
+              .col-md-6
+                input.form-control(type='text' name='username' placeholder='Enter Username')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='password') Password
+              .col-md-6
+                input.form-control(type='password' name='password' placeholder='Enter Password')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='password2') Confirm Password
+              .col-md-6
+                input.form-control(type='password' name='password2' placeholder='Confirm Password')
+            .form-group.row
+              label.col-md-4.col-form-label.text-md-right(for='profileimage') Profile Image
+              .col-md-6
+                input.form-control-file(type='file' name='profileimage')
+            .col-md-6.offset-md-4
+              button.btn.btn-primary(type='submit' name='submit' value='Register')
+                | Register
