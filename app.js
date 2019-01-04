@@ -1,8 +1,20 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var logger = require('morgan');
+var session = require('express-session');
+var expressValidator = require('express-validator'); 
+var passport = require('passport');
+var localPassport = require('passport-local');
+var multer = require('multer');
+var uploads = multer({dest: './uploads'});
+var flash = require('connect-flash');
+var mongo = require('mongodb');
+var mongoose = require('mongoose');
+var db = mongoose.connection;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,11 +25,28 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Handle Sessions
+app.use(session({
+  secret: 'secret',
+  saveUninitialized: true,
+  resave: true
+}));
+
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Validator
+app.use(express.json())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
