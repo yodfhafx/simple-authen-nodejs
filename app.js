@@ -9,7 +9,8 @@ var logger = require('morgan');
 var session = require('express-session');
 var expressValidator = require('express-validator'); 
 var passport = require('passport');
-var localPassport = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcryptjs');
 var multer = require('multer');
 var upload = multer({dest: './uploads'});
 var mongo = require('mongodb');
@@ -67,6 +68,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+app.get('*', function(req, res, next) {
+  res.locals.user = req.user || null;
   next();
 });
 

@@ -21,10 +21,10 @@ router.get('/login', function(req, res, next) {
 });
 
 router.post('/login',
-  passport.authenticate('local',{failureRedirect:'/users/login', failureFlash: 'Invalid username or password'}),
+  passport.authenticate('local', {failureRedirect: '/users/login', failureFlash: 'Invalid Username or Password'}),
   function(req, res) {
-   req.flash('success', 'You are now logged in');
-   res.redirect('/');
+    req.flash('success', 'You are logged in')
+    res.redirect('/');
 });
 
 passport.serializeUser(function(user, done) {
@@ -37,21 +37,22 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-passport.use(new LocalStrategy(function(username, password, done){
-  User.getUserByUsername(username, function(err, user){
+passport.use(new LocalStrategy(function(username, password, done) {
+  User.getUserByUsername(username, function(err, user) {
     if(err) throw err;
-    if(!user){
+    if(!user) {
       return done(null, false, {message: 'Unknown User'});
     }
 
-    User.comparePassword(password, user.password, function(err, isMatch){
+    User.comparePassword(password, user.password, function(err, isMatch) {
       if(err) return done(err);
-      if(isMatch){
+      if(isMatch) {
         return done(null, user);
       } else {
-        return done(null, false, {message:'Invalid Password'});
+        return done(null, false, {message: 'Invalid Password'});
       }
     });
+
   });
 }));
 
@@ -104,6 +105,12 @@ router.post('/register', upload.single('profileimage') ,function(req, res, next)
     res.location('/');
     res.redirect('/');
   }
+});
+
+router.get('/logout', function(req, res) {
+  req.logout();
+  req.flash('success', 'Logged out')
+  res.redirect('/users/login');
 });
 
 module.exports = router;
