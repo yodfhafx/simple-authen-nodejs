@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var flash = require('connect-flash');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -8,10 +9,9 @@ var logger = require('morgan');
 var session = require('express-session');
 var expressValidator = require('express-validator'); 
 var passport = require('passport');
-var localPassport = require('passport-local');
+var localPassport = require('passport-local').Strategy;
 var multer = require('multer');
-var uploads = multer({dest: './uploads'});
-var flash = require('connect-flash');
+var upload = multer({dest: './uploads'});
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var db = mongoose.connection;
@@ -31,8 +31,6 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Handle Sessions
 app.use(session({
@@ -46,7 +44,31 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Validator
-app.use(express.json())
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
